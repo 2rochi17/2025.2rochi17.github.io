@@ -1,1 +1,0 @@
-# 2025.2rochi17.github.io
