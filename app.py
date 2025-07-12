@@ -88,3 +88,13 @@ if __name__ == '__main__':
     else:
         print("✅ 서버 실행 중... http://localhost:5000")
         app.run(debug=True)
+
+from flask import send_from_directory
+
+@app.route('/')
+def serve_frontend():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/main.js')
+def serve_js():
+    return send_from_directory('.', 'main.js')
