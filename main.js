@@ -47,17 +47,23 @@ function sendMix() {
 
   document.getElementById("status").innerText = "⏳ 믹싱 중...";
 
-  fetch("/api/mix", {
+  const API_URL = "https://your-render-app.onrender.com/api/mix";  // 여기를 Render 도메인으로 바꿔주세요
+
+  fetch(API_URL, {
     method: "POST",
     body: JSON.stringify(settings)
   })
     .then(res => res.json())
     .then(data => {
+    if (data.status === "error") {
+      document.getElementById("status").innerText = "❌ 서버 오류: " + data.message;
+    } else {
       document.getElementById("status").innerText = "✅ 믹싱 완료!";
       document.getElementById("player").src = data.url + "?t=" + Date.now();
-    })
+    }
+  })
     .catch(err => {
-      console.error(err);
-      document.getElementById("status").innerText = "❌ 오류 발생";
-    });
+    console.error(err);
+    document.getElementById("status").innerText = "❌ 오류 발생";
+  });
 }
