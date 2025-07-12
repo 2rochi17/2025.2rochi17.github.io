@@ -20,7 +20,7 @@ import soundfile as sf
 from spleeter.separator import Separator
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://2rochi17.github.io"]) 
 
 MP3_FILE = "static/iu.good_day.mp3"
 OUTPUT_FILE = "static/iu_mixed.wav"
