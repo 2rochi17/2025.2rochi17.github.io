@@ -1,4 +1,4 @@
-// Render에 배포된 Flask API 주소로 바꿔야 함
+// 👉 Render의 실제 URL로 변경해야 함
 const API_URL = "https://your-render-app.onrender.com/api/mix";
 
 function sendMix() {
@@ -17,7 +17,7 @@ function sendMix() {
     .then(res => res.json())
     .then(data => {
       if (data.status === "error") {
-        document.getElementById("status").innerText = "❌ 서버 오류: " + data.message;
+        document.getElementById("status").innerText = "❌ 오류: " + data.message;
       } else {
         document.getElementById("status").innerText = "✅ 믹싱 완료!";
         document.getElementById("player").src = data.url + "?t=" + Date.now();
@@ -25,6 +25,6 @@ function sendMix() {
     })
     .catch(err => {
       console.error(err);
-      document.getElementById("status").innerText = "❌ 오류 발생";
+      document.getElementById("status").innerText = "❌ 서버와 연결 실패";
     });
 }
