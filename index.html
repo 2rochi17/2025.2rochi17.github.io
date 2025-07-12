@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Audio Mixer</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <title>🎛️ Audio Mixer</title>
 </head>
 <body>
-  <h1>🎛️ 악기별 볼륨 조절기</h1>
-
-  <div id="sliders-container">
-    <!-- 슬라이더는 JS에서 자동으로 추가됩니다 -->
-  </div>
-
-  <button onclick="applyMix()">🎧 Apply Mix</button>
+  <h1>악기별 볼륨 조절 (dB)</h1>
+  <div id="sliders-container"></div>
+  <button onclick="applyMix()">🎧 믹싱 적용</button>
+  <p id="status"></p>
+  <audio id="player" controls style="margin-top: 20px;"></audio>
 
   <script src="main.js"></script>
 </body>
