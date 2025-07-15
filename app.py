@@ -7,7 +7,7 @@ import soundfile as sf
 from spleeter.separator import Separator
 
 app = Flask(__name__)
-CORS(app, origins=["https://2rochi17.github.io"])  # 👈 GitHub Pages 주소 정확히 입력
+CORS(app, resources={r"/api/*": {"origins": "https://2rochi17.github.io"}})  # CORS 정책 강화
 
 MP3_FILE = "static/iu.good_day.mp3"
 OUTPUT_FILE = "static/iu_mixed.wav"
@@ -23,14 +23,20 @@ def mix_audio():
             "other": settings.get("other", 0)
         }
 
+        # Spleeter로 분리
         separator = Separator('spleeter:4stems')
         separator.separate_to_file(MP3_FILE, 'output')
 
-        base_path = os.path.join("output", os.path.splitext(MP3_FILE)[0])
+        # static/iu.good_day.mp3 → iu.good_day
+        filename_without_ext = os.path.splitext(os.path.basename(MP3_FILE))[0]
+        base_path = os.path.join("output", filename_without_ext)
+
         mixed = []
 
         for stem in ['vocals', 'drums', 'bass', 'other']:
             stem_file = os.path.join(base_path, f"{stem}.wav")
+            if not os.path.exists(stem_file):
+                raise FileNotFoundError(f"Stem not found: {stem_file}")
             y, sr = librosa.load(stem_file, sr=None)
             gain = 10 ** (gains[stem] / 20)
             mixed.append(y * gain)
@@ -40,6 +46,7 @@ def mix_audio():
         return jsonify({"status": "success", "url": "/static/iu_mixed.wav"})
 
     except Exception as e:
+        print("[ERROR]", str(e))  # 콘솔 출력도 함께
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/static/<path:filename>')
