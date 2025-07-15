@@ -1,5 +1,5 @@
-// 👉 Render의 실제 URL로 변경해야 함
-const API_URL = "https://your-render-app.onrender.com/api/mix";
+// ✅ Render에서 실제 URL로 교체 (이 부분만 바꾸면 끝!)
+const API_URL = "https://audio-mix-render.onrender.com/api/mix";
 
 function sendMix() {
   const settings = {
@@ -20,7 +20,7 @@ function sendMix() {
         document.getElementById("status").innerText = "❌ 오류: " + data.message;
       } else {
         document.getElementById("status").innerText = "✅ 믹싱 완료!";
-        document.getElementById("player").src = data.url + "?t=" + Date.now();
+        document.getElementById("player").src = data.url + "?t=" + Date.now(); // 캐싱 방지
       }
     })
     .catch(err => {
