@@ -6,10 +6,11 @@ import numpy as np
 import soundfile as sf
 from spleeter.separator import Separator
 
-app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://2rochi17.github.io"}})  # CORS 정책 강화
+app = Flask(__name__, static_folder='static')
+CORS(app, origins=["https://2rochi17.github.io"])  # GitHub Pages 주소
 
 MP3_FILE = "static/iu.good_day.mp3"
+OUTPUT_DIR = "output"
 OUTPUT_FILE = "static/iu_mixed.wav"
 
 @app.route('/api/mix', methods=['POST'])
@@ -23,20 +24,20 @@ def mix_audio():
             "other": settings.get("other", 0)
         }
 
-        # Spleeter로 분리
         separator = Separator('spleeter:4stems')
-        separator.separate_to_file(MP3_FILE, 'output')
+        # output 폴더가 없으면 생성
+        if not os.path.exists(OUTPUT_DIR):
+            os.makedirs(OUTPUT_DIR)
+        
+        separator.separate_to_file(MP3_FILE, OUTPUT_DIR)
 
-        # static/iu.good_day.mp3 → iu.good_day
-        filename_without_ext = os.path.splitext(os.path.basename(MP3_FILE))[0]
-        base_path = os.path.join("output", filename_without_ext)
-
+        base_path = os.path.join(OUTPUT_DIR, os.path.splitext(os.path.basename(MP3_FILE))[0])
         mixed = []
 
         for stem in ['vocals', 'drums', 'bass', 'other']:
             stem_file = os.path.join(base_path, f"{stem}.wav")
             if not os.path.exists(stem_file):
-                raise FileNotFoundError(f"Stem not found: {stem_file}")
+                return jsonify({"status": "error", "message": f"{stem_file} not found"}), 404
             y, sr = librosa.load(stem_file, sr=None)
             gain = 10 ** (gains[stem] / 20)
             mixed.append(y * gain)
@@ -46,12 +47,12 @@ def mix_audio():
         return jsonify({"status": "success", "url": "/static/iu_mixed.wav"})
 
     except Exception as e:
-        print("[ERROR]", str(e))  # 콘솔 출력도 함께
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/static/<path:filename>')
-def static_file(filename):
-    return send_from_directory('static', filename)
+def static_files(filename):
+    # static 폴더 내 파일 제공
+    return send_from_directory(app.static_folder, filename)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
