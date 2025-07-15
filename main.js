@@ -1,5 +1,5 @@
 // 실제 Render URL로 꼭 변경하세요!
-const API_URL = "https://<your-render-app>.onrender.com/api/mix";
+const API_URL = "https://two025yjproject.onrender.com";
 
 function sendMix() {
   const settings = {
